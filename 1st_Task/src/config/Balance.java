@@ -31,6 +31,9 @@ public final class Balance {
     public static final int DEF_HIGH_MIN        = 1;    // Lv>1: 1 + 0~1
     public static final int DEF_HIGH_BOUND      = 2;    // 0~1
 
+    // 전투 턴 타임아웃(초) — 시간 내 입력 없으면 기본 동작(방어) 수행
+    public static final int TURN_TIMEOUT_SECONDS = 10;
+
     // 몹 이름 리스트
     public static final String[] ENEMY_NAMES = {
             "고블린", "스켈레톤", "늑대인간", "도적", "트롤"
