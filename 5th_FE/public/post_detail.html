@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>게시글 상세</title>
+  <link rel="stylesheet" href="/css/style.css"/>
+</head>
+<body>
+  <div class="container">
+    <div class="header-actions" style="justify-content: space-between;">
+      <h2 id="title">제목</h2>
+      <div>
+        <button id="btnLike" class="button secondary">좋아요</button>
+        <button id="btnUnlike" class="button secondary">좋아요 취소</button>
+      </div>
+    </div>
+    <div class="muted" id="meta">작성자 · ♥0 · 👁0 · 💬0</div>
+    <div class="spacer"></div>
+    <div class="card" id="content"></div>
+    <div class="spacer"></div>
+    <div id="images" class="grid"></div>
+    <div class="spacer"></div>
+    <a href="/" class="button secondary">목록으로</a>
+  </div>
+  <script src="/js/auth.js"></script>
+  <script src="/js/api.js"></script>
+  <script src="/js/ui.js"></script>
+  <script>
+    renderNav(); if(!requireLogin('/login')){}
+    const params = new URLSearchParams(location.search); const postId = Number(params.get('id'));
+    async function load(){
+      const res = await apiFetch('/posts/'+postId+'?increaseView=true');
+      const p = res.data;
+      document.getElementById('title').textContent = p.title;
+      document.getElementById('content').textContent = p.content;
+      document.getElementById('meta').textContent = '${p.nickname} · ♥ ${p.likeCount} · 👁 ${p.viewCount} · 💬 ${p.commentCount}';
+      const wrap = document.getElementById('images'); wrap.innerHTML='';
+      (p.images||[]).forEach(img=>{ const el = document.createElement('img'); el.src=img.imageUrl; el.style.width='100%'; el.style.borderRadius='12px'; el.style.border='1px solid #30363d'; wrap.appendChild(el); });
+    }
+    document.getElementById('btnLike').addEventListener('click', async ()=>{ try{ await apiFetch('/posts/'+postId+'/like',{method:'POST'}); await load(); }catch(e){ alert('좋아요 실패: '+e.message); } });
+    document.getElementById('btnUnlike').addEventListener('click', async ()=>{ try{ await apiFetch('/posts/'+postId+'/like',{method:'DELETE'}); await load(); }catch(e){ alert('좋아요 취소 실패: '+e.message); } });
+    load();
+  </script>
+</body>
+</html>

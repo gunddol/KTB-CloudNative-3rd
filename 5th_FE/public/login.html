@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>로그인</title>
+  <link rel="stylesheet" href="/css/style.css"/>
+</head>
+<body>
+  <div class="nav"><div class="brand"><a href="/">Community</a></div></div>
+  <div class="container">
+    <h2>로그인</h2>
+    <p class="muted">데모: 사용자 ID를 입력하면 로컬에 저장되고 API 호출 시 <code>X-USER-ID</code> 헤더로 전송됩니다.</p>
+    <div class="card">
+      <div class="form-row"><label>사용자 ID</label><input id="userId" type="number" placeholder="예: 1"/></div>
+      <div class="form-row"><label>프로필 이미지 URL (선택)</label><input id="profileImageUrl" type="url" placeholder="https://..."/></div>
+      <div class="form-row">
+        <button id="btnLogin" class="button">로그인</button>
+        <a href="/signup" class="button secondary">회원가입</a>
+      </div>
+    </div>
+  </div>
+  <script src="/js/auth.js"></script>
+  <script>
+    document.getElementById('btnLogin').addEventListener('click', () => {
+      const id = Number(document.getElementById('userId').value);
+      const img = document.getElementById('profileImageUrl').value.trim();
+      if(!id){ alert('정수 ID를 입력하세요.'); return; }
+      Auth.setUserId(id); if(img) Auth.setProfile({ imageUrl: img });
+      location.href = '/';
+    });
+  </script>
+</body>
+</html>

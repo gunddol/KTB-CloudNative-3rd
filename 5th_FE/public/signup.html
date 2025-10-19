@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>회원가입</title>
+  <link rel="stylesheet" href="/css/style.css"/>
+</head>
+<body>
+  <div class="nav"><div class="brand"><a href="/">Community</a></div></div>
+  <div class="container">
+    <h2>회원가입</h2>
+    <div class="card">
+      <div class="form-row"><label>닉네임</label><input id="nickname"/></div>
+      <div class="form-row"><label>이메일</label><input id="email" type="email"/></div>
+      <div class="form-row"><label>비밀번호</label><input id="password" type="password"/></div>
+      <div class="form-row"><label>프로필 이미지 URL (선택)</label><input id="profileImageUrl" type="url"/></div>
+      <div class="form-row"><button id="btnSignup" class="button">가입하기</button></div>
+    </div>
+  </div>
+  <script src="/js/auth.js"></script>
+  <script src="/js/api.js"></script>
+  <script>
+    document.getElementById('btnSignup').addEventListener('click', async () => {
+      const payload = {
+        nickname: document.getElementById('nickname').value.trim(),
+        email: document.getElementById('email').value.trim(),
+        password: document.getElementById('password').value.trim(),
+        profile_image_url: document.getElementById('profileImageUrl').value.trim() || null
+      };
+      if(!payload.nickname || !payload.email || !payload.password){ alert('필수 항목을 입력하세요.'); return; }
+      try{
+        const res = await apiFetch('/users/signup', { method:'POST', body: JSON.stringify(payload) });
+        const userId = res?.data?.userId;
+        if(userId){ Auth.setUserId(userId); if(payload.profile_image_url) Auth.setProfile({ imageUrl: payload.profile_image_url }); alert('가입 성공!'); location.href='/'; }
+        else { alert('가입 성공: ID 미수신'); location.href='/'; }
+      }catch(e){ alert('가입 실패: ' + (e.message||'unknown')); }
+    });
+  </script>
+</body>
+</html>

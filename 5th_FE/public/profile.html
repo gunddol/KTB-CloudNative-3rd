@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>회원정보 수정(데모)</title>
+  <link rel="stylesheet" href="/css/style.css"/>
+</head>
+<body>
+  <div class="container">
+    <h2>회원정보 수정 (데모)</h2>
+    <p class="muted">백엔드에 사용자 수정 API가 없어, 프로필 이미지만 로컬에 저장됩니다.</p>
+    <div class="card">
+      <div class="form-row"><label>사용자 ID</label><input id="uid" disabled/></div>
+      <div class="form-row"><label>프로필 이미지 URL</label><input id="imgUrl" placeholder="https://..."/></div>
+      <div class="form-row">
+        <button id="btnSave" class="button">저장</button>
+        <button id="btnLogout" class="button secondary">로그아웃</button>
+      </div>
+    </div>
+  </div>
+  <script src="/js/auth.js"></script>
+  <script src="/js/ui.js"></script>
+  <script>
+    renderNav(); if(!requireLogin('/login')){}
+    document.getElementById('uid').value = Auth.userId() || '';
+    document.getElementById('imgUrl').value = Auth.profile().imageUrl || '';
+    document.getElementById('btnSave').addEventListener('click', ()=>{ const url=document.getElementById('imgUrl').value.trim(); Auth.setProfile({ imageUrl: url||null }); alert('저장됨'); location.reload(); });
+    document.getElementById('btnLogout').addEventListener('click', ()=>{ Auth.clear(); location.href='/login'; });
+  </script>
+</body>
+</html>

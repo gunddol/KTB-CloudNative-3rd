@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>게시글 목록</title>
+  <link rel="stylesheet" href="/css/style.css"/>
+</head>
+<body>
+  <div class="container">
+    <div class="header-actions" style="justify-content: space-between;">
+      <h2>게시글 목록</h2>
+      <div class="muted">로그인 후 게시글을 클릭하면 상세 페이지로 이동합니다.</div>
+    </div>
+    <div class="spacer"></div>
+    <div id="posts" class="posts"></div>
+  </div>
+  <script src="/js/auth.js"></script>
+  <script src="/js/api.js"></script>
+  <script src="/js/ui.js"></script>
+  <script>
+    renderNav();
+    async function load(){
+      const res = await apiFetch('/posts');
+      const list = res?.data?.posts || [];
+      const wrap = document.getElementById('posts'); wrap.innerHTML='';
+      list.forEach(p => {
+        const el = document.createElement('div'); el.className='post-item';
+        el.innerHTML = `<div style="display:flex;justify-content:space-between;">
+          <div><div style="font-weight:700;">${p.title}</div>
+          <div class="muted">♥ ${p.likeCount} · 👁 ${p.viewCount} · 💬 ${p.commentCount}</div></div>
+          <div class="muted">#${p.id}</div></div>`;
+        el.addEventListener('click', ()=> { if(!Auth.isLoggedIn()) location.href='/login'; else location.href='/posts/detail?id='+p.id; });
+        wrap.appendChild(el);
+      });
+    }
+    load();
+  </script>
+</body>
+</html>
