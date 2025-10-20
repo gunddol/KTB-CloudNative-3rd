@@ -1,6 +1,5 @@
-# Frontend (Vanilla JS + Express) — No Search
+# Frontend (Vanilla JS + Express)
 
-검색 기능 제거, 게시글 상세 페이지까지 포함한 테스트 프론트.
 
 ## 실행
 ```bash
