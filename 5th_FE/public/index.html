@@ -7,31 +7,62 @@
   <link rel="stylesheet" href="/css/style.css"/>
 </head>
 <body>
-  <div class="container">
-    <div class="header-actions" style="justify-content: space-between;">
-      <h2>게시글 목록</h2>
-      <div class="muted">로그인 후 게시글을 클릭하면 상세 페이지로 이동합니다.</div>
+  <div class="wrap">
+    
+    <div class="container">
+        <div id="contents" class="contents"></div>
     </div>
-    <div class="spacer"></div>
-    <div id="posts" class="posts"></div>
+    
+    <!-- 플로팅 새 글 작성 버튼 -->
+    <button id="floatingWriteBtn" class="floating-write-btn" onclick="location.href='/post_new.html'">
+      <span class="floating-btn-icon">✏️</span>
+      <span class="floating-btn-text">새 글 작성</span>
+    </button>
   </div>
   <script src="/js/auth.js"></script>
   <script src="/js/api.js"></script>
   <script src="/js/ui.js"></script>
   <script>
-    renderNav();
+    // 헤더 렌더링
+    renderHeader();
+    
+    // 스크롤바 자동 숨김/표시 기능
+    const contents = document.getElementById('contents');
+    let scrollTimer;
+    
+    contents.addEventListener('scroll', () => {
+      contents.classList.add('scrolling');
+      
+      clearTimeout(scrollTimer);
+      scrollTimer = setTimeout(() => {
+        contents.classList.remove('scrolling');
+      }, 1000);
+    });
+    
+    // 로그인 상태 변경 시 헤더 업데이트
+    function updateHeader() {
+      const existingHeader = document.querySelector('.header');
+      if (existingHeader) {
+        existingHeader.remove();
+      }
+      renderHeader();
+    }
+    
+    // 로그인 상태 변경 감지 (localStorage 변경 감지)
+    window.addEventListener('storage', function(e) {
+      if (e.key === 'auth.user') {
+        updateHeader();
+      }
+    });
+    
     async function load(){
       const res = await apiFetch('/posts');
       const list = res?.data?.posts || [];
-      const wrap = document.getElementById('posts'); wrap.innerHTML='';
+      const post_list = document.getElementById('contents');
+      post_list.innerHTML='';
       list.forEach(p => {
-        const el = document.createElement('div'); el.className='post-item';
-        el.innerHTML = `<div style="display:flex;justify-content:space-between;">
-          <div><div style="font-weight:700;">${p.title}</div>
-          <div class="muted">♥ ${p.likeCount} · 👁 ${p.viewCount} · 💬 ${p.commentCount}</div></div>
-          <div class="muted">#${p.id}</div></div>`;
-        el.addEventListener('click', ()=> { if(!Auth.isLoggedIn()) location.href='/login'; else location.href='/posts/detail?id='+p.id; });
-        wrap.appendChild(el);
+        const cardPost = renderCardPost(p);
+        post_list.appendChild(cardPost);
       });
     }
     load();

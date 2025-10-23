@@ -4,7 +4,7 @@ const path = require('path');
 const { createProxyMiddleware } = require('http-proxy-middleware');
 
 const app = express();
-const PORT = process.env.PORT || 3001;
+const PORT = process.env.PORT || 3003;
 const BACKEND_URL = process.env.BACKEND_URL || 'http://localhost:8080';
 
 app.use(express.static(path.join(__dirname, 'public')));
@@ -21,5 +21,6 @@ app.get('/signup', (req, res) => res.sendFile(path.join(__dirname, 'public', 'si
 app.get('/posts/new', (req, res) => res.sendFile(path.join(__dirname, 'public', 'post_new.html')));
 app.get('/posts/detail', (req, res) => res.sendFile(path.join(__dirname, 'public', 'post_detail.html')));
 app.get('/profile', (req, res) => res.sendFile(path.join(__dirname, 'public', 'profile.html')));
+app.get('/change-password', (req, res) => res.sendFile(path.join(__dirname, 'public', 'change-password.html')));
 
 app.listen(PORT, () => console.log(`[frontend] http://localhost:${PORT} (proxy -> ${BACKEND_URL})`));
