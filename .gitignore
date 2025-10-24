@@ -31,3 +31,5 @@ coverage/
 # 로컬 업로드/정적 저장소(테스트용)
 uploads/
 public/uploads/
+
+*.yml
