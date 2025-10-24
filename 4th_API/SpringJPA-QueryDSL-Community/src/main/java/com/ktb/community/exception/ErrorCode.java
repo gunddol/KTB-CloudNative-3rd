@@ -18,7 +18,9 @@ public enum ErrorCode {
     NICKNAME_ALREADY_EXISTS(HttpStatus.CONFLICT, "nickname_already_exists"),
     ALREADY_LIKED(HttpStatus.CONFLICT, "already_liked"),
     DB_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "db_error"),
-    INTERNAL_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "internal_server_error");
+    INTERNAL_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "internal_server_error"),
+    TOKEN_NOT_VALID(HttpStatus.INTERNAL_SERVER_ERROR, "token_server_error"),
+    NOT_AUTHORIZED(HttpStatus.FORBIDDEN, "not_authorized");
 
     private final HttpStatus status;
     private final String message;

@@ -4,17 +4,24 @@ import com.ktb.community.domain.Post;
 import com.ktb.community.dto.ApiResponse;
 import com.ktb.community.dto.PostDtos.*;
 import com.ktb.community.service.PostService;
+import com.ktb.community.service.S3Service;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.data.domain.Page;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequestMapping("/posts")
 public class PostController {
     private final PostService posts;
-    public PostController(PostService posts) { this.posts = posts; }
+    private final S3Service s3Service;
+    
+    public PostController(PostService posts, S3Service s3Service) { 
+        this.posts = posts; 
+        this.s3Service = s3Service;
+    }
 
     @GetMapping
     public ResponseEntity<?> list(@RequestParam(required=false) String query,
@@ -46,6 +53,33 @@ public class PostController {
         return ResponseEntity.status(HttpStatus.CREATED).body(new ApiResponse<>("create_post_success", java.util.Map.of("postId", p.getId())));
     }
 
+    @PostMapping("/upload-image")
+    public ResponseEntity<?> uploadImage(@RequestHeader("X-USER-ID") Integer userId,
+                                         @RequestParam("file") MultipartFile file) {
+        try {
+            // 파일 유효성 검사
+            if (file.isEmpty()) {
+                return ResponseEntity.badRequest()
+                        .body(new ApiResponse<>("upload_failed", java.util.Map.of("error", "파일이 비어있습니다.")));
+            }
+            
+            // 이미지 파일 타입 검사
+            String contentType = file.getContentType();
+            if (contentType == null || !contentType.startsWith("image/")) {
+                return ResponseEntity.badRequest()
+                        .body(new ApiResponse<>("upload_failed", java.util.Map.of("error", "이미지 파일만 업로드 가능합니다.")));
+            }
+            
+            // S3에 이미지 업로드
+            String imageUrl = s3Service.uploadImage(file);
+            
+            return ResponseEntity.ok(new ApiResponse<>("upload_success", java.util.Map.of("imageUrl", imageUrl)));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ApiResponse<>("upload_failed", java.util.Map.of("error", e.getMessage())));
+        }
+    }
+
     @PatchMapping("/{postId}")
     public ResponseEntity<?> update(@PathVariable Integer postId,
                                     @RequestHeader("X-USER-ID") Integer userId,
@@ -58,7 +92,7 @@ public class PostController {
     public ResponseEntity<?> deleteSoft(@PathVariable Integer postId,
                                         @RequestHeader("X-USER-ID") Integer userId) {
         posts.softDelete(userId, postId);
-        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+        return ResponseEntity.ok(new ApiResponse<>("delete_post_success", java.util.Map.of("postId", postId)));
     }
 
     @PostMapping("/{postId}/like")

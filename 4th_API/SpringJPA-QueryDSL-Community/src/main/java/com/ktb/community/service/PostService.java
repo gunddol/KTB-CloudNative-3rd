@@ -42,16 +42,30 @@ public class PostService {
 
     @Transactional
     public Post create(Integer authorId, CreatePostRequest req) {
-        User author = users.findById(authorId).orElseThrow(() -> new ApiException(ErrorCode.UNAUTHORIZED, "token_not_valid"));
+        User author = users.findById(authorId)
+                .orElseThrow(() -> new ApiException(ErrorCode.UNAUTHORIZED, "token_not_valid"));
+
         Post p = new Post();
         p.setAuthor(author); p.setTitle(req.title()); p.setContent(req.content());
         p = posts.save(p);
-        if (req.image_urls() != null) {
+        if (req.imageUrls() != null && !req.imageUrls().trim().isEmpty()) {
             List<PostImage> list = new ArrayList<>();
-            int i=0; for (String url : req.image_urls()) {
-                PostImage img = new PostImage(); img.setPost(p); img.setImageUrl(url); img.setSortOrder(++i); list.add(img);
+            // imageUrls를 쉼표로 분리하여 개별 URL로 처리
+            String[] imageUrls = req.imageUrls().split(",");
+            int i = 0;
+            for (String url : imageUrls) {
+                String trimmedUrl = url.trim();
+                if (!trimmedUrl.isEmpty()) {
+                    PostImage img = new PostImage();
+                    img.setPost(p);
+                    img.setImageUrl(trimmedUrl);
+                    img.setSortOrder(++i);
+                    list.add(img);
+                }
             }
-            images.saveAll(list);
+            if (!list.isEmpty()) {
+                images.saveAll(list);
+            }
         }
         return p;
     }
@@ -63,14 +77,26 @@ public class PostService {
         if (req.title() != null) p.setTitle(req.title());
         if (req.content() != null) p.setContent(req.content());
         p = posts.save(p);
-        if (req.image_urls() != null) {
+        if (req.imageUrls() != null && !req.imageUrls().trim().isEmpty()) {
             var old = images.findByPostIdOrderBySort(postId);
             images.deleteAll(old);
             List<PostImage> list = new ArrayList<>();
-            int i=0; for (String url : req.image_urls()) {
-                PostImage img = new PostImage(); img.setPost(p); img.setImageUrl(url); img.setSortOrder(++i); list.add(img);
+            // imageUrls를 쉼표로 분리하여 개별 URL로 처리
+            String[] imageUrls = req.imageUrls().split(",");
+            int i = 0;
+            for (String url : imageUrls) {
+                String trimmedUrl = url.trim();
+                if (!trimmedUrl.isEmpty()) {
+                    PostImage img = new PostImage();
+                    img.setPost(p);
+                    img.setImageUrl(trimmedUrl);
+                    img.setSortOrder(++i);
+                    list.add(img);
+                }
             }
-            images.saveAll(list);
+            if (!list.isEmpty()) {
+                images.saveAll(list);
+            }
         }
         return p;
     }

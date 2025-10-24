@@ -48,6 +48,6 @@ public class CommentController {
                                         @PathVariable Integer commentId,
                                         @RequestHeader("X-USER-ID") Integer userId) {
         comments.softDelete(userId, commentId);
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.ok(new ApiResponse<>("delete_comment_success", java.util.Map.of("commentId", commentId)));
     }
 }

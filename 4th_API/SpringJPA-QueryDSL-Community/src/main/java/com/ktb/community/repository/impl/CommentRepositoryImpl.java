@@ -21,6 +21,7 @@ public class CommentRepositoryImpl implements CommentRepositoryCustom {
         return queryFactory
                 .selectFrom(c)
                 .join(c.post, p)
+                .join(c.author).fetchJoin()
                 .where(p.id.eq(postId).and(c.deleted.isFalse()))
                 .orderBy(c.publishedAt.asc(), c.id.asc())
                 .fetch();

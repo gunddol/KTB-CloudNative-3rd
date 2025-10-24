@@ -23,4 +23,9 @@ app.get('/posts/detail', (req, res) => res.sendFile(path.join(__dirname, 'public
 app.get('/profile', (req, res) => res.sendFile(path.join(__dirname, 'public', 'profile.html')));
 app.get('/change-password', (req, res) => res.sendFile(path.join(__dirname, 'public', 'change-password.html')));
 
+// Spring 백엔드로 리다이렉트
+app.get('/privacy', (req, res) => {
+  res.redirect(`${BACKEND_URL}/privacy`);
+});
+
 app.listen(PORT, () => console.log(`[frontend] http://localhost:${PORT} (proxy -> ${BACKEND_URL})`));

@@ -1,5 +1,6 @@
 package com.ktb.community.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
@@ -12,6 +13,7 @@ public class PostImage {
     @Column(name="image_id", columnDefinition="int unsigned")
     private Integer id;
 
+    @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name="post_id", foreignKey = @ForeignKey(name="fk_post_images_post"))
     private Post post;

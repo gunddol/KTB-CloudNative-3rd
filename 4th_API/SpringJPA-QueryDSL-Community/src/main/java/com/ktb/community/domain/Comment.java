@@ -1,5 +1,6 @@
 package com.ktb.community.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
@@ -15,6 +16,7 @@ public class Comment {
     @JoinColumn(name="user_id", foreignKey = @ForeignKey(name="fk_comments_user"))
     private User author;
 
+    @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name="post_id", foreignKey = @ForeignKey(name="fk_comments_post"))
     private Post post;

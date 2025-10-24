@@ -1,21 +1,5 @@
 function $(sel, root=document){ return root.querySelector(sel); }
-function renderNav() {
-  const nav = document.createElement('div');
-  nav.className = 'nav';
-  nav.innerHTML = `
-    <div class="brand"><a href="/">아무 말 대잔치</a></div>
-    <div class="right">
-      <a href="/posts/new" class="button secondary" id="newPost">새 글</a>
-      <img class="profile-pic" id="navProfile" src="${Auth.profile().imageUrl || 'https://placekitten.com/64/64'}" title="프로필" />
-    </div>`;
-  document.body.prepend(nav);
-  $('#navProfile').addEventListener('click', () => {
-    if (!Auth.isLoggedIn()) location.href = '/login'; else location.href = '/profile';
-  });
-  $('#newPost').addEventListener('click', (e) => {
-    if (!Auth.isLoggedIn()) { e.preventDefault(); location.href = '/login'; }
-  });
-}
+
 function requireLogin(redirect='/login'){ 
   if(!Auth.isLoggedIn()){ 
     alert('로그인이 필요합니다.');
@@ -37,6 +21,9 @@ function renderHeader() {
   const profileImageUrl = isLoggedIn ? (userProfile.imageUrl || '/assets/images/account_circle.png') : '/assets/images/account_circle.png';
   
   const headerContent = `
+    <div class="header-menu">
+        <img class="menu-icon" src="/assets/images/menu.png" alt="메뉴" onclick="asideMenu()" />
+    </div>
     <div class="logo-text">아무 말 대잔치</div>
     <div class="header-actions">
       <div class="header-dropdown">
@@ -56,6 +43,9 @@ function renderHeader() {
   
   header.innerHTML = headerContent;
   document.querySelector('.wrap').prepend(header);
+  
+  // Aside 메뉴 렌더링
+  renderAsideMenu();
   
   // 드롭다운 메뉴 기능 추가
   window.toggleDropdown = function() {
@@ -92,6 +82,7 @@ function renderHeader() {
       location.href = '/login';
     }
   };
+
 
   // // 프로필 이미지 클릭 시 로그인되지 않은 상태면 로그인 페이지로 이동
   // const profileImg = document.querySelector('.profile_circle');
